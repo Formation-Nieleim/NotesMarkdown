@@ -1,7 +1,7 @@
 # Programme de formation
-- [Programme de formation](#programme-de-formation)
-  - [Markdown](#markdown)
-  - [Kubernetes](#kubernetes)
+
+- [Markdown](markdown/markdown.md)
+- [Kubernetes](kubernetes/kubernetes.md)
 
 ## Markdown
 ```mermaid
