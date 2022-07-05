@@ -1,8 +1,20 @@
 # Fiche Kubernetes
+- [Fiche Kubernetes](#fiche-kubernetes)
+  - [Ressources](#ressources)
+      - [Doc](#doc)
+      - [Youtube](#youtube)
+  - [Principes](#principes)
+  - [Architecture](#architecture)
+      - [Composants](#composants)
+      - [Exemple de cluster](#exemple-de-cluster)
+  - [Minikube](#minikube)
+  - [Commandes de bases kubectl & minikube](#commandes-de-bases-kubectl--minikube)
+
 
 ## Ressources
+#### Doc
 [Doc officielle](https://kubernetes.io/fr/docs/home/)
-
+[Minikube](https://minikube.sigs.k8s.io/docs/start/)
 #### Youtube
 [Techworld with Nana 4h course](https://www.youtube.com/watch?v=X48VuDVv0do&t=2385s)
 
@@ -68,11 +80,14 @@ Gestion de microservices (multiplication des containers)
 
 **Master node**
 - API server (cluster gateway)
+  - Communication avec API
+  - Avec UI
+  - Avec CLI (Kubectl plus puissant)
 - Scheduler (décide des tâches)
   - Allocation intelligente de ressources
   - Kubelet réalise les tâches
 - Controller manager (Détecte les changements d'états)
-  - Fais des demmandes au Scheduler pour rétablir des pods ...
+  - Fait des demmandes au Scheduler pour rétablir des pods ...
 - etcd (stockage clé-valeur)
   - C'est le cerveau
   - Tous les autres services se servent d'etcd
@@ -80,5 +95,33 @@ Gestion de microservices (multiplication des containers)
 
 #### Exemple de cluster
 ![Cluster kubernetes](cluster_kubernetes.png)
-## Commandes de bases kubectl
 
+## Minikube
+Créé un environnement virtuel sur le PC
+C'est un node kubernetes qui sert de cluster
+Utilisé pour tester en local
+
+## Commandes de bases kubectl & minikube
+Démarrer un cluster local avec minikube (avec docker, hyperkit ...)
+```
+minikube start --driver=docker
+```
+
+Lister les nodes ou
+- pod
+- deployment
+- services
+- ...
+```
+kubectl get nodes
+```
+
+Crééer un pod (on créé des deployment pas des pods)
+```
+kubectl create deployment NAME --image=IMAGE
+```
+
+```mermaid 
+flowchart LR
+Deployment --Manage--> Replicaset --Manage--> Pod
+```
