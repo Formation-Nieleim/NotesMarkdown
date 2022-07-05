@@ -125,3 +125,13 @@ kubectl create deployment NAME --image=IMAGE
 flowchart LR
 Deployment --Manage--> Replicaset --Manage--> Pod
 ```
+
+Editer la configuration d'un deployment
+```
+kubectl edit deployment NAME
+```
+
+Afficher les logs d'un pod
+```
+kubectl logs NAME
+```
