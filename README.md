@@ -3,25 +3,13 @@
 - [Markdown](markdown/markdown.md)
 - [Kubernetes](kubernetes/kubernetes.md)
 
-## Markdown
 ```mermaid
-flowchart
-M[Markdown]---Mermaid
-```
+journey
+    title Kubernetes
+    section Kubernetes
+        Concepts de base et architecture: 6
+        Minikube et kubectl: 6
+        Configuration file: 4
+        
 
-## Kubernetes
-```mermaid
-flowchart
-K[Kubernetes]----P[Principes]
-K----A[Architecture]
-K----M[Minikube]
-K----CTL[Kubectl]
-K----Y[Configuration YAML]
-K----N[Namespaces]
-K----I[Ingress]
-K----H[Helm]
-K----V[Volumes]
-K----St[Statefulset]
-K----Sv[Services]
 ```
-

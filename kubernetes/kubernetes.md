@@ -9,6 +9,12 @@
       - [Exemple de cluster](#exemple-de-cluster)
   - [Minikube](#minikube)
   - [Commandes de bases kubectl & minikube](#commandes-de-bases-kubectl--minikube)
+  - [Configuration file](#configuration-file)
+  - [Namespace](#namespace)
+  - [Ingress](#ingress)
+  - [Helm package manager](#helm-package-manager)
+  - [Volumes](#volumes)
+  - [StatefulSet](#statefulset)
 
 
 ## Ressources
@@ -101,6 +107,11 @@ Créé un environnement virtuel sur le PC
 C'est un node kubernetes qui sert de cluster
 Utilisé pour tester en local
 
+Pour associer une IP externe a un service spécifiquement dans Minikube
+```
+minikube service NAME
+```
+
 ## Commandes de bases kubectl & minikube
 Démarrer un cluster local avec minikube (avec docker, hyperkit ...)
 ```
@@ -123,7 +134,7 @@ kubectl create deployment NAME --image=IMAGE
 
 ```mermaid 
 flowchart LR
-Deployment --Manage--> Replicaset --Manage--> Pod
+Deployment --Manage--> Replicaset --Manage--> Pod --Abstract--> Container
 ```
 
 Editer la configuration d'un deployment
@@ -135,3 +146,152 @@ Afficher les logs d'un pod
 ```
 kubectl logs NAME
 ```
+
+Ouvrir un terminal intéractif du pod
+```
+kubectl exec -it NAME -- bin/bash
+```
+
+Supprimer un pod
+```
+kubectl delete deployment NAME
+```
+
+## Configuration file
+Permet de ne pas taper manuellement des commandes avec kubectl mais de les enregistrer dans un fichier YAML.
+
+```
+kubectl apply -f NAME
+```
+
+Chaque ficher de configuration a 3 parties
+- Metadata (nom du composant ...)
+- Specifications (nombre de replicas ...)
+- Status (Automatiquement ajouté par kubernetes)
+
+Les fichier de configurations ont leurs propres attributs pour un deployment ou un service ...
+
+On les stockent en général avec le code des applications ou dans un repo a part
+
+Les labels clé-valeurs permettent de connecter les pods et services et deployment
+
+Exemple de configuration file **deployment**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.16
+          ports:
+            - containerPort: 80
+```
+
+Exemple de configuration file **service**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+```
+
+Dans le service, le "selector: app: nginx" fait référence au label dans le deployment
+
+Un **external service**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-express-service
+spec:
+  selector:
+    app: mongo-express
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30000
+```
+Type: LoadBalancer pour accepter les requêtes extérieures
+nodePort: pour définir le port extérieur
+
+Récap archi kubernetes services avec exemple MongoDB et MongoExpress
+```mermaid
+flowchart
+ExternalRequest--Request-->MongoExpressService--Forward-->MongoExpress--Request-->MongoDBService--Forward-->MongoDB
+MongoExpress--Access-->MongoSecret
+MongoExpress--Access-->MongoConfigMap
+MongoDB--Access-->MongoSecret
+```
+
+## Namespace
+Namespace = cluster virtuel dans un cluster kubernetes
+4 namespace par défaut
+```mermaid
+flowchart TB
+  subgraph Cluster
+    subgraph kube-system
+      A[Not for our use]
+      B[system process / kubectl ...]
+    end
+    subgraph kube-public
+      C[Contient les infos publiques]
+    end
+    subgraph kube-node-lease
+      D[Disponibilité des nodes]
+    end
+    subgraph default
+      E[Namespace par défaut]
+    end
+
+  end
+```
+
+Créer un namespace
+```
+kubectl create namespace NAME
+```
+
+Namespace configuration file mieux (historique, mieux gérable)
+
+Cas d'utilisation de namespaces
+- Structurer des composants
+- Eviter les conflits entre les équipes
+- Partager des ressources pour différents environnements
+- Accèder et limiter les ressources
+
+Certaines ressources ne sont pas dispo à l'exterieur d'un namespace (configMap, secret ...) Mais les services sont partageables.
+
+Les volumes pour la persistance ne peuvent être créés dans un namespace
+## Ingress
+Permet de donner une vraie URL au lieu d'une IP:PORT pour un service exposé.
+On utilise plus d'external service mais internal service mappé avec Ingress
+
+Architecture avec ingress
+![Archi ingress](ingress.png)
+## Helm package manager
+
+## Volumes
+
+## StatefulSet
